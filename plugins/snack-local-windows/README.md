@@ -8,12 +8,12 @@ This repository is a **Codex plugin marketplace**, not a hosted MCP service. Bot
 
 Windows x64 preview release. Ask Codex to install this marketplace and its Windows plugin:
 
-> Add the GitHub plugin marketplace https://github.com/Leoberus/snack-local-marketplace and install snack-local-windows from snack-local-marketplace. Use the existing Codex CLI; do not install Node or Expo CLI.
+> Add the GitHub plugin marketplace https://github.com/ptrpspeen/snack-local-marketplace and install snack-local-windows from snack-local-marketplace. Use the existing Codex CLI; do not install Node or Expo CLI.
 
 The equivalent Codex CLI commands are:
 
 ```text
-codex plugin marketplace add Leoberus/snack-local-marketplace
+codex plugin marketplace add ptrpspeen/snack-local-marketplace
 codex plugin add snack-local-windows@snack-local-marketplace
 ```
 
@@ -28,7 +28,7 @@ Choose Luna if available in your account. Its token usage and quality with this 
 macOS Apple Silicon:
 
 ```text
-codex plugin marketplace add Leoberus/snack-local-marketplace
+codex plugin marketplace add ptrpspeen/snack-local-marketplace
 codex plugin add snack-local@snack-local-marketplace
 ```
 
@@ -85,4 +85,4 @@ Shared source is in `src/`; distributable plugins are in `plugins/`. Install pin
 
 Bundled runtime: Node v24.19.0 from nodejs.org. `runtime/SHA256SUMS` verifies each compressed archive before extraction. Original Windows archive SHA256: `57f71ab3652e797d84acddc79c81cc9ff1c6ddb2a1974cdb83f00fee9bff4c73`. The macOS executable was copied from the local Codex Node v24.19.0 runtime. See each package's `runtime/LICENSE.node` and `THIRD-PARTY-NOTICES.txt` for third-party licenses.
 
-Report reproducible issues at https://github.com/Leoberus/snack-local-marketplace/issues. Include OS, plugin version and the short error; exclude tokens and private source.
+Report reproducible issues at https://github.com/ptrpspeen/snack-local-marketplace/issues. Include OS, plugin version and the short error; exclude tokens and private source.
