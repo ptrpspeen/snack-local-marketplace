@@ -4,35 +4,23 @@ Build React Native apps with Codex, keep source on your computer, and preview co
 
 This repository is a **Codex plugin marketplace**, not a hosted MCP service. Both plugins include a local MCP server and a compressed Node runtime. You do not need to install Node, npm, Expo CLI, or run a server yourself. The runtime is extracted on first launch without downloading another program. Internet access is needed for Expo services. Expo Go on a phone is optional.
 
-## Install on Windows
+## Install — same prompt on Mac and Windows
 
-Windows x64 preview release. Ask Codex to install this marketplace and its Windows plugin:
+Paste this into Codex on the computer where you want to use Snack Local:
 
-> Add the GitHub plugin marketplace https://github.com/ptrpspeen/snack-local-marketplace and install snack-local-windows from snack-local-marketplace. Use the existing Codex CLI; do not install Node or Expo CLI.
+> Install Snack Local from https://github.com/ptrpspeen/snack-local-marketplace. Follow INSTALL.md, detect this computer's operating system and architecture, and select the matching package. Use the existing Codex CLI. Do not install Node or Expo CLI.
 
-The equivalent Codex CLI commands are:
+The user does not need to name their OS or choose a package. Codex selects the platform-specific plugin using [INSTALL.md](INSTALL.md). Internally the marketplace still contains separate Mac and Windows packages; it does not automatically select a platform when you click an arbitrary package in the directory.
 
-```text
-codex plugin marketplace add ptrpspeen/snack-local-marketplace
-codex plugin add snack-local-windows@snack-local-marketplace
-```
-
-Open a **new Codex task** after installation, then try:
+After installation, open a **new Codex task**, then try:
 
 > Use Snack Local to create a habit tracker in this project. Show the web preview and Expo Go QR. Keep the code in this folder and sync after each complete edit batch.
 
-Choose Luna if available in your account. Its token usage and quality with this plugin have not yet been measured. Install only the plugin for your operating system.
+Choose Luna if available in your account. Its token usage and quality with this plugin have not yet been measured.
 
-## Install on Mac
+Supported preview packages: macOS Apple Silicon and Windows x64. Intel Mac, Windows ARM64, Linux, and cloud execution are not verified targets of this release.
 
-macOS Apple Silicon:
-
-```text
-codex plugin marketplace add ptrpspeen/snack-local-marketplace
-codex plugin add snack-local@snack-local-marketplace
-```
-
-Start a new Codex task. Intel Mac, Windows ARM64, Linux, and cloud execution are not verified targets of this release.
+For manual CLI installation, see [INSTALL.md](INSTALL.md).
 
 ## Preview and save
 
@@ -61,12 +49,7 @@ Use forward slashes in file names on every OS. Add only files that exist. Depend
 
 ## Update
 
-```text
-codex plugin marketplace upgrade snack-local-marketplace
-codex plugin add snack-local-windows@snack-local-marketplace
-```
-
-Use `snack-local` instead for Mac, then start a new task.
+Ask Codex: “Update Snack Local from its GitHub marketplace using INSTALL.md, keeping the package appropriate for this computer.” Then start a new task.
 
 ## Windows test checklist
 
