@@ -1,4 +1,6 @@
 $ErrorActionPreference = 'Stop'
+# A parent PowerShell 7 process can supply a module path without Windows PowerShell modules.
+$env:PSModulePath = (Join-Path $PSHOME 'Modules') + [IO.Path]::PathSeparator + $env:PSModulePath
 $runtimeDir = Join-Path $PSScriptRoot 'runtime'
 $nodePath = Join-Path $runtimeDir 'unpacked\node.exe'
 if (-not [Environment]::Is64BitOperatingSystem) {
