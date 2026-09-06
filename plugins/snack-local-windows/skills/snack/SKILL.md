@@ -1,7 +1,9 @@
 ---
 name: snack
-description: Create or edit local React Native apps and sync complete edit batches to Expo Snack for web and Expo Go preview. Use when the user asks for Snack apps or live Snack preview.
+description: Create or edit local React Native apps and sync complete edit batches to Expo Snack for web and Expo Go preview. Use when the user asks for Snack apps, live Snack preview, or recovery of a disconnected Snack session.
 ---
+
+For `Transport closed`, `Broken pipe`, an unreachable preview, or a request to reconnect, follow [connection recovery](references/recovery.md) before further tool calls.
 
 Use the Snack Local MCP tools. Call `open_project` with an absolute directory and a unique name when starting; use an existing project's `snack.config.json` on later sessions.
 

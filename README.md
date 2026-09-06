@@ -69,3 +69,7 @@ Shared source is in `src/`; distributable plugins are in `plugins/`. Install pin
 Bundled runtime: Node v24.19.0 from nodejs.org. `runtime/SHA256SUMS` verifies each compressed archive before extraction. Original Windows archive SHA256: `57f71ab3652e797d84acddc79c81cc9ff1c6ddb2a1974cdb83f00fee9bff4c73`. The macOS executable was copied from the local Codex Node v24.19.0 runtime. See each package's `runtime/LICENSE.node` and `THIRD-PARTY-NOTICES.txt` for third-party licenses.
 
 Report reproducible issues at https://github.com/ptrpspeen/snack-local-marketplace/issues. Include OS, plugin version and the short error; exclude tokens and private source.
+
+## Connection recovery
+
+If the preview stops, ask Codex to follow the bundled Snack skill’s connection recovery guide. If MCP reports `Transport closed` or `Broken pipe`, open a new task in the same project folder and ask it to reopen the existing Snack project. Source and saved identity are preserved; the live URL/QR can change. A dead transport alone does not require entering your Expo token again. This release documents recovery; it does not automatically reconnect the old task.
