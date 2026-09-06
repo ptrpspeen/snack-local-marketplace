@@ -13,6 +13,8 @@ test('bundled MCP: local source sync, stale error isolation, save setup, host re
   const pluginDir=path.resolve('plugins',process.env.SNACK_TEST_PLUGIN??'snack-local');
   const config=JSON.parse(await readFile(path.join(pluginDir,'.mcp.json'),'utf8')).mcpServers.snack;
   const transport=new StdioClientTransport({...config,cwd:pluginDir,env:{...process.env,PATH:process.platform==='win32'?`${process.env.SystemRoot}\\System32;${process.env.SystemRoot}\\System32\\WindowsPowerShell\\v1.0`:'/usr/bin:/bin',SNACK_LOCAL_DATA_DIR:path.join(scratch,'credentials')},stderr:'pipe'});
+  let startupErrors='';
+  transport.stderr?.on('data',chunk=>{startupErrors+=chunk.toString();});
   try{
     await client.connect(transport);
     const tools=await client.listTools();assert.equal(tools.tools.length,5);
@@ -36,7 +38,7 @@ test('bundled MCP: local source sync, stale error isolation, save setup, host re
     const blocked=await fetch(base+'report',{method:'POST',headers:{Origin:'https://example.org','Content-Type':'application/json'},body:'{}'});assert.equal(blocked.status,403);
     assert.equal((await fetch(base+'../batch')).status,404);
     const packet=await fetch(base+'batch').then(r=>r.json());assert.equal(packet.batch.revision,next.revision);
-  }finally{await client.close();await rm(scratch,{recursive:true,force:true});}
+  }catch(error){if(startupErrors)console.error(startupErrors);throw error;}finally{await client.close();await rm(scratch,{recursive:true,force:true});}
 });
 
 test('source allowlist rejects secret names and symlinks outside project',async()=>{
