@@ -1,0 +1,1 @@
+{"name":"snack-local","version":"0.1.0","private":true,"type":"module","scripts":{"build":"node build.mjs","test":"node --test test/*.test.mjs"},"dependencies":{"@modelcontextprotocol/sdk":"1.30.0","zod":"4.3.6","snack-sdk":"6.6.2","qrcode":"1.5.4","assert":"2.1.0"},"devDependencies":{"esbuild":"0.25.9"}}

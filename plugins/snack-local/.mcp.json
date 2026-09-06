@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "snack": {
+      "command": "/bin/sh",
+      "args": [
+        "./launch.sh"
+      ],
+      "cwd": "."
+    }
+  }
+}

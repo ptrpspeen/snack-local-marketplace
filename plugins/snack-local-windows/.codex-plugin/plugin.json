@@ -1,0 +1,19 @@
+{
+  "name": "snack-local-windows",
+  "version": "0.2.0",
+  "description": "Create React Native apps with local source, Expo Snack sync, web and Expo Go preview. Windows x64 preview release.",
+  "author": {
+    "name": "Leoberus"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Snack Local (Windows x64)",
+    "shortDescription": "Local code \u2192 Snack \u2192 web and Expo Go",
+    "longDescription": "Build apps from your ideas or continue an existing Snack-compatible project. Local MCP with bundled Windows x64 runtime, batch sync, live preview and saving to your Expo account.",
+    "developerName": "Leoberus",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use Snack Local to build an app from my idea in this project and show its live preview."
+  },
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,28 @@
+name: Verify packaged MCP
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  mcp:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            plugin: snack-local
+          - os: windows-latest
+            plugin: snack-local-windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.19.0'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '10.32.1'
+      - run: pnpm install --frozen-lockfile
+      - name: Exercise the distributed launcher (bundled runtime)
+        run: node --test test/integration.test.mjs
+        env:
+          SNACK_TEST_PLUGIN: ${{ matrix.plugin }}

@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "snack": {
+      "command": "powershell.exe",
+      "args": [
+        "-NoLogo",
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "./launch.ps1"
+      ],
+      "cwd": "."
+    }
+  }
+}

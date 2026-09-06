@@ -1,0 +1,32 @@
+{
+  "name": "snack-local-marketplace",
+  "interface": {
+    "displayName": "Snack Local Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "snack-local",
+      "source": {
+        "source": "local",
+        "path": "./plugins/snack-local"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "snack-local-windows",
+      "source": {
+        "source": "local",
+        "path": "./plugins/snack-local-windows"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
