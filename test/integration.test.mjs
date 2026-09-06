@@ -52,3 +52,37 @@ test('source allowlist rejects secret names and symlinks outside project',async(
     await config(['App.js','outside.js']);await assert.rejects(()=>readBatch(root),/inside/);
   }finally{await rm(scratch,{recursive:true,force:true});}
 });
+
+test('closing and restarting the packaged MCP reopens existing source with a new preview',async()=>{
+  const scratch=await mkdtemp(path.join(os.tmpdir(),'snack-restart-'));
+  const pluginDir=path.resolve('plugins',process.env.SNACK_TEST_PLUGIN??'snack-local');
+  const config=JSON.parse(await readFile(path.join(pluginDir,'.mcp.json'),'utf8')).mcpServers.snack;
+  const directory=path.join(scratch,'OneDrive - Example University','app ไทย');
+  let previousUrl,revision;
+  try{
+    for(let run=0;run<3;run++){
+      const client=new Client({name:'restart-verification',version:'1'});
+      const transport=new StdioClientTransport({...config,cwd:pluginDir,env:{...process.env,SNACK_LOCAL_DATA_DIR:path.join(scratch,'credentials')},stderr:'pipe'});
+      let errors='';transport.stderr?.on('data',chunk=>{errors+=chunk.toString();});
+      try{
+        await client.connect(transport);
+        const result=await client.callTool({name:'open_project',arguments:run===0?{directory,name:'restart-probe'}:{directory}});
+        assert.ok(!result.isError,JSON.stringify(result));
+        const state=JSON.parse(result.content[0].text);
+        assert.notEqual(state.previewUrl,previousUrl);
+        const packet=await fetch(state.previewUrl+'batch').then(r=>r.json());
+        if(run===0){
+          await writeFile(path.join(directory,'App.js'),packet.batch.files['App.js'].contents+'\n// preserved across restarts\n');
+          const synced=await client.callTool({name:'sync_project',arguments:{}});
+          revision=JSON.parse(synced.content[0].text).revision;
+        }else{
+          assert.equal(state.revision,revision);
+          assert.match(packet.batch.files['App.js'].contents,/preserved across restarts/);
+        }
+        previousUrl=state.previewUrl;
+      }catch(error){if(errors)console.error(errors);throw error;}
+      finally{await client.close();}
+      await assert.rejects(()=>fetch(previousUrl+'batch',{signal:AbortSignal.timeout(2000)}),'The ended session should release its preview server');
+    }
+  }finally{await rm(scratch,{recursive:true,force:true});}
+});
