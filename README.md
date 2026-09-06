@@ -16,7 +16,7 @@ After installation, open a **new Codex task**, then try:
 
 > Use Snack Local to create a habit tracker in this project. Show the web preview and Expo Go QR. Keep the code in this folder and sync after each complete edit batch.
 
-Choose Luna if available in your account. Its token usage and quality with this plugin have not yet been measured.
+Use your preferred model available in Codex.
 
 Supported preview packages: macOS Apple Silicon and Windows x64. Intel Mac, Windows ARM64, Linux, and cloud execution are not verified targets of this release.
 
@@ -24,7 +24,7 @@ For manual CLI installation, see [INSTALL.md](INSTALL.md).
 
 ## Preview and save
 
-Keep the returned local browser preview open; it maintains the live Snack connection. Open the QR/link in Expo Go for native preview. After a full set of edits, Codex calls `sync_project` once. The MCP reads local source itself and returns compact status instead of echoing code into model context.
+Keep the returned local browser preview open; it maintains the live Snack connection. Open the QR/link in Expo Go for native preview. After a full set of edits, Codex calls `sync_project` once. The MCP reads local source itself and returns sync and preview status.
 
 To save a Snack to your own Expo account, ask Codex to connect your Expo account and save the project. It opens a local setup page where **you** enter an Expo access token from Expo Settings. Enter tokens only on that page. The local MCP reads the token internally and uploads the allowlisted source directly to Expo. Save again after subsequent syncs to update the saved Snack. Live preview URLs and QR codes change between sessions; the saved Snack URL is separate and can be opened later.
 
@@ -53,14 +53,14 @@ Ask Codex: “Update Snack Local from its GitHub marketplace using INSTALL.md, k
 
 ## Windows test checklist
 
-1. Install through the marketplace and start a new task with Luna.
+1. Install through the marketplace and start a new task with your preferred model.
 2. Create an app in a directory containing spaces or Thai characters.
 3. Open web preview and the Expo Go QR. Confirm the requested app appears.
 4. Ask for a visible change; confirm both previews update after sync.
 5. Connect your Expo account through the local page and save. Open the saved link.
 6. End the task, reopen the same local project in a new task, change it and save again. Check that the saved link stays the same.
 
-Automated CI exercises the packaged launcher and MCP protocol on Windows and Mac, including source sync, no-op sync, stale feedback, missing-account setup and request boundaries. It does not prove the Codex desktop install flow, Luna behavior, real-account saving, or visible web/Expo Go rendering on Windows. Mac web/iOS preview and an earlier account-saving prototype were tested locally.
+Automated CI exercises the packaged launcher and MCP protocol on Windows and Mac, including source sync, no-op sync, stale feedback, missing-account setup and request boundaries. It does not prove the Codex desktop install flow, model behavior, real-account saving, or visible web/Expo Go rendering on Windows. Mac web/iOS preview and an earlier account-saving prototype were tested locally.
 
 ## Development
 
