@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,writeFile,readFile,symlink,rm} from 'node:fs/promises';
+import {mkdtemp,writeFile,readFile,symlink,rm,mkdir} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
 import os from 'node:os';
 import path from 'node:path';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
@@ -12,7 +13,8 @@ test('bundled MCP: local source sync, stale error isolation, save setup, host re
   const client=new Client({name:'verification',version:'1'});
   const pluginDir=path.resolve('plugins',process.env.SNACK_TEST_PLUGIN??'snack-local');
   const config=JSON.parse(await readFile(path.join(pluginDir,'.mcp.json'),'utf8')).mcpServers.snack;
-  const transport=new StdioClientTransport({...config,cwd:pluginDir,env:{...process.env,PATH:process.platform==='win32'?`${process.env.SystemRoot}\\System32;${process.env.SystemRoot}\\System32\\WindowsPowerShell\\v1.0`:'/usr/bin:/bin',SNACK_LOCAL_DATA_DIR:path.join(scratch,'credentials')},stderr:'pipe'});
+  const launchPath=process.platform==='win32'?`${process.env.SystemRoot}\\System32;${process.env.SystemRoot}\\System32\\WindowsPowerShell\\v1.0`:process.platform==='linux'?process.env.PATH:'/usr/bin:/bin';
+  const transport=new StdioClientTransport({...config,cwd:pluginDir,env:{...process.env,PATH:launchPath,SNACK_LOCAL_DATA_DIR:path.join(scratch,'credentials')},stderr:'pipe'});
   let startupErrors='';
   transport.stderr?.on('data',chunk=>{startupErrors+=chunk.toString();});
   try{
@@ -22,6 +24,11 @@ test('bundled MCP: local source sync, stale error isolation, save setup, host re
     const opened=await call('open_project',{directory:path.join(scratch,'app space ไทย'),name:'integration-probe'});
     assert.equal(opened.configured,false);assert.ok(opened.previewUrl.startsWith('http://localhost:'));
     const base=opened.previewUrl;
+    const previewPage=await fetch(base);assert.equal(previewPage.status,200);assert.match(await previewPage.text(),/<html/i);
+    if(process.platform==='linux'){
+      const otherLoopback=new URL(base);otherLoopback.hostname='127.0.0.2';
+      await assert.rejects(()=>fetch(otherLoopback,{signal:AbortSignal.timeout(2000)}),'Default preview binding must stay on 127.0.0.1');
+    }
     const source=await readFile(path.join(scratch,'app space ไทย/App.js'),'utf8');
     assert.match(source,/My App/);
     await call('open_project',{directory:path.join(scratch,'app space ไทย')});
@@ -44,10 +51,12 @@ test('bundled MCP: local source sync, stale error isolation, save setup, host re
 test('source allowlist rejects secret names and symlinks outside project',async()=>{
   const scratch=await mkdtemp(path.join(os.tmpdir(),'snack-boundary-'));
   try{
-    const root=path.join(scratch,'app space ไทย');const {mkdir}=await import('node:fs/promises');await mkdir(root);
+    const root=path.join(scratch,'app space ไทย');await mkdir(root);
     await writeFile(path.join(root,'App.js'),'export default ()=>null;');
     const config=files=>writeFile(path.join(root,'snack.config.json'),JSON.stringify({name:'probe',files}));
     await config(['App.js','.env.json']);await assert.rejects(()=>readBatch(root),/explicitly/);
+    await config(['App.js','node_modules/private.js']);await assert.rejects(()=>readBatch(root),/explicitly/);
+    await config(['App.js',path.join(scratch,'outside.js')]);await assert.rejects(()=>readBatch(root),/explicitly/);
     await writeFile(path.join(scratch,'outside.js'),'private');await symlink(path.join(scratch,'outside.js'),path.join(root,'outside.js'));
     await config(['App.js','outside.js']);await assert.rejects(()=>readBatch(root),/inside/);
   }finally{await rm(scratch,{recursive:true,force:true});}
@@ -84,5 +93,19 @@ test('closing and restarting the packaged MCP reopens existing source with a new
       finally{await client.close();}
       await assert.rejects(()=>fetch(previousUrl+'batch',{signal:AbortSignal.timeout(2000)}),'The ended session should release its preview server');
     }
+  }finally{await rm(scratch,{recursive:true,force:true});}
+});
+
+
+test('Linux launcher rejects the wrong architecture and invalid port with clear errors', {skip:process.platform!=='linux'},async()=>{
+  const scratch=await mkdtemp(path.join(os.tmpdir(),'snack-linux-launcher-'));
+  const pluginDir=path.resolve('plugins/snack-local-linux');
+  try{
+    const fakeUname=path.join(scratch,'uname');
+    await writeFile(fakeUname,'#!/bin/sh\nif [ "$1" = "-s" ]; then echo Linux; else echo aarch64; fi\n',{mode:0o755});
+    const wrongArch=spawnSync('/bin/sh',['./launch.sh'],{cwd:pluginDir,env:{...process.env,PATH:`${scratch}:${process.env.PATH}`},encoding:'utf8',timeout:5000});
+    assert.equal(wrongArch.status,1);assert.match(wrongArch.stderr,/requires Linux x64/);
+    const badPort=spawnSync('/bin/sh',['./launch.sh'],{cwd:pluginDir,env:{...process.env,SNACK_LOCAL_PORT:'not-a-port'},encoding:'utf8',timeout:5000});
+    assert.equal(badPort.status,1);assert.match(badPort.stderr,/Invalid SNACK_LOCAL_PORT/);
   }finally{await rm(scratch,{recursive:true,force:true});}
 });

@@ -12,6 +12,8 @@ jobs:
             plugin: snack-local
           - os: windows-latest
             plugin: snack-local-windows
+          - os: ubuntu-latest
+            plugin: snack-local-linux
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +24,9 @@ jobs:
         with:
           version: '10.32.1'
       - run: pnpm install --frozen-lockfile
-      - name: Exercise the distributed launcher (bundled runtime)
+      - run: pnpm approve-builds --all
+      - run: pnpm run build
+      - name: Exercise the distributed launcher
         run: node --test test/integration.test.mjs
         env:
           SNACK_TEST_PLUGIN: ${{ matrix.plugin }}

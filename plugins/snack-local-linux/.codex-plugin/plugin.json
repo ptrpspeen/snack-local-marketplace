@@ -1,0 +1,19 @@
+{
+  "name": "snack-local-linux",
+  "version": "0.2.1+codex.20261014",
+  "description": "Create React Native apps with local source, Expo Snack sync, web and Expo Go preview. Linux x64 MCP host release.",
+  "author": {
+    "name": "ptrpspeen"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Snack Local (Linux x64)",
+    "shortDescription": "Local code → Snack → web and Expo Go",
+    "longDescription": "Build apps from your ideas or continue an existing Snack-compatible project. Standard stdio MCP with Linux x64 Node.js, batch sync, live preview and saving to your Expo account.",
+    "developerName": "ptrpspeen",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": "Use Snack Local to build an app from my idea in this project and show its live preview."
+  },
+  "mcpServers": "./.mcp.json"
+}

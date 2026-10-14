@@ -1,8 +1,8 @@
-# Snack Local for Codex
+# Snack Local for Codex and Manus
 
-Build React Native apps with Codex, keep source on your computer, and preview complete edit batches in a browser or Expo Go. Start from a neutral screen or continue an existing Snack-compatible app. This is for anyone building personal tools, business prototypes, learning projects, or other app ideas.
+Build React Native apps with Codex or a standard MCP host such as Manus, keep source in the host environment, and preview complete edit batches in a browser or Expo Go. Start from a neutral screen or continue an existing Snack-compatible app. This is for anyone building personal tools, business prototypes, learning projects, or other app ideas.
 
-This repository is a **Codex plugin marketplace**, not a hosted MCP service. Both plugins include a local MCP server and a compressed Node runtime. You do not need to install Node, npm, Expo CLI, or run a server yourself. The runtime is extracted on first launch without downloading another program. Internet access is needed for Expo services. Expo Go on a phone is optional.
+This repository includes a **Codex plugin marketplace** and a standard stdio MCP server for Manus and other Linux x64 MCP hosts. The macOS and Windows plugins include a compressed Node runtime; their users do not need to install Node, npm, or Expo CLI. The Linux package uses Node.js 24 or newer from its host environment. Internet access is needed for Expo services. Expo Go on a phone is optional.
 
 ## Install — same prompt on Mac and Windows
 
@@ -18,9 +18,17 @@ After installation, open a **new Codex task**, then try:
 
 Use your preferred model available in Codex.
 
-Supported preview packages: macOS Apple Silicon and Windows x64. Intel Mac, Windows ARM64, Linux, and cloud execution are not verified targets of this release.
+Supported packages: macOS Apple Silicon, Windows x64, and Linux x64 for MCP hosts such as Manus. Intel Mac, Windows ARM64, and Linux ARM64 are not verified targets.
 
 For manual CLI installation, see [INSTALL.md](INSTALL.md).
+
+## Manus / Linux MCP installation
+
+The `snack-local-linux` package is a standard stdio MCP server and does not require Codex. It targets Linux x64 environments such as Manus Sandbox and requires an existing Node.js 24 or newer runtime. Configure your MCP host to run `/bin/sh` with `plugins/snack-local-linux/launch.sh` and set the working directory to the Linux plugin folder. See [Linux installation](plugins/snack-local-linux/INSTALL.md) for an MCP configuration example.
+
+Ask the Manus agent: “Open `/absolute/path/to/my-app` with Snack Local, sync the completed edit batch, and report the preview URL.” A new project gets `App.js` and `snack.config.json`; an existing project must list `App.js` in the config. The same source limits and dependency format below apply. The preview browser must be able to reach the MCP host's local HTTP port; sandbox port routing may be needed.
+
+`SNACK_LOCAL_DATA_DIR` selects the credential directory. `SNACK_LOCAL_HOST` defaults to `127.0.0.1`, and `SNACK_LOCAL_PORT` defaults to `0` for an available port. Setting a network bind address exposes the preview server to that network, so use it only inside a trusted sandbox. To save, call `account_setup` and enter the Expo user access token on the local page. Never place a token in a prompt, issue, log, or MCP argument.
 
 ## Preview and save
 
@@ -60,11 +68,11 @@ Ask Codex: “Update Snack Local from its GitHub marketplace using INSTALL.md, k
 5. Connect your Expo account through the local page and save. Open the saved link.
 6. End the task, reopen the same local project in a new task, change it and save again. Check that the saved link stays the same.
 
-Automated CI exercises the packaged launcher and MCP protocol on Windows and Mac, including source sync, no-op sync, stale feedback, missing-account setup and request boundaries. It does not prove the Codex desktop install flow, model behavior, real-account saving, or visible web/Expo Go rendering on Windows. Mac web/iOS preview and an earlier account-saving prototype were tested locally.
+Automated CI exercises the packaged launcher and MCP protocol on Windows, Mac, and Linux, including source sync, no-op sync, stale feedback, missing-account setup and request boundaries. It does not prove the Codex desktop install flow, model behavior, real-account saving, or visible web/Expo Go rendering on Windows. Mac web/iOS preview and an earlier account-saving prototype were tested locally.
 
 ## Development
 
-Shared source is in `src/`; distributable plugins are in `plugins/`. Install pinned dependencies with `pnpm install --frozen-lockfile`, then run `node build.mjs`. Run `node --test test/integration.test.mjs` on Apple Silicon or set `SNACK_TEST_PLUGIN=snack-local-windows` on Windows. The test removes Node from the child process PATH so the packaged runtime must work.
+Shared source is in `src/`; distributable plugins are in `plugins/`. Install pinned dependencies with `pnpm install --frozen-lockfile`, then run `node build.mjs`. Run `SNACK_TEST_PLUGIN=snack-local node --test test/integration.test.mjs` on Apple Silicon, `SNACK_TEST_PLUGIN=snack-local-windows` on Windows, or `SNACK_TEST_PLUGIN=snack-local-linux` on Linux x64. The Mac and Windows tests remove Node from the child process PATH so the packaged runtimes must work; Linux uses its host Node.js.
 
 Bundled runtime: Node v24.19.0 from nodejs.org. `runtime/SHA256SUMS` verifies each compressed archive before extraction. Original Windows archive SHA256: `57f71ab3652e797d84acddc79c81cc9ff1c6ddb2a1974cdb83f00fee9bff4c73`. The macOS executable was copied from the local Codex Node v24.19.0 runtime. See each package's `runtime/LICENSE.node` and `THIRD-PARTY-NOTICES.txt` for third-party licenses.
 
