@@ -50055,8 +50055,17 @@ var server = import_node_http.default.createServer(async (req, res) => {
   }
 });
 async function main() {
-  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
-  base = "http://localhost:" + server.address().port + route;
+  const host = process.env.SNACK_LOCAL_HOST ?? "127.0.0.1";
+  if (!host || /[\s/?#]/.test(host)) throw Error("Invalid SNACK_LOCAL_HOST");
+  const portText = process.env.SNACK_LOCAL_PORT ?? "0";
+  if (!/^\d+$/.test(portText) || Number(portText) > 65535) throw Error("Invalid SNACK_LOCAL_PORT");
+  const requestedPort = Number(portText);
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(requestedPort, host, resolve);
+  });
+  const publicHost = host === "0.0.0.0" || host === "127.0.0.1" ? "localhost" : host.includes(":") ? `[${host}]` : host;
+  base = `http://${publicHost}:${server.address().port}${route}`;
   const mcp = new McpServer({ name: "snack-local", version: "0.1.0" }, { instructions: "Edit source locally. sync_project reads only snack.config.json allowlisted files. Call once per completed edit batch. get_status returns current-revision preview errors, not source. Never ask for or read Expo tokens; account_setup returns a local user-entry page. save_project uploads source to Expo." });
   mcp.registerTool("open_project", { description: "Open a local Snack project; creates a minimal neutral starter for a new project when App.js is absent. Returns preview URL.", inputSchema: { directory: external_exports3.string(), name: external_exports3.string().regex(/^[a-z0-9][a-z0-9-]{0,63}$/).optional() } }, async ({ directory, name }) => {
     try {
@@ -50119,8 +50128,8 @@ async function main() {
   await mcp.connect(new StdioServerTransport());
   process.stdin.on("end", () => server.close(() => process.exit(0)));
 }
-main().catch(() => {
-  console.error("Snack Local failed to start.");
+main().catch((error48) => {
+  console.error(error48.message?.startsWith("Invalid SNACK_LOCAL_") ? error48.message : "Snack Local failed to start. Check the configured host, port and runtime.");
   process.exit(1);
 });
 /*! Bundled license information:
